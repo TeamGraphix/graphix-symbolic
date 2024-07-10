@@ -10,7 +10,7 @@ import numbers
 
 import numpy as np
 import sympy as sp
-from graphix.parameter import Expression, ExpressionOperatorResult, Parameter
+from graphix.parameter import Expression, ExpressionOperatorResult, ExpressionOrNumber, Parameter
 
 
 class SympyExpression(Expression):

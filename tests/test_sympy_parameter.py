@@ -10,7 +10,6 @@ def test_parameter_circuit_simulation(fx_rng: np.random.Generator) -> None:
     circuit = Circuit(1)
     circuit.rz(0, alpha)
     result_subs_then_simulate = circuit.subs(alpha, 0.5).simulate_statevector().statevec
-    statevec = circuit.simulate_statevector().statevec
     result_simulate_then_subs = circuit.simulate_statevector().statevec.subs(alpha, 0.5)
     assert np.allclose(result_subs_then_simulate.psi, result_simulate_then_subs.psi)
 

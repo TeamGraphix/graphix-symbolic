@@ -45,6 +45,9 @@ Documentation = "https://graphix.readthedocs.io"
 [tool.setuptools_scm]
 version_file = "graphix_symbolic/_version.py"
 
+[tool.ruff]
+line-length = 120
+
 [tool.black]
 line-length = 120
 target-version = ["py38"]
