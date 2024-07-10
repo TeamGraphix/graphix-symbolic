@@ -1,0 +1,1 @@
+from graphix_symbolic.sympy_parameter import SympyParameter
