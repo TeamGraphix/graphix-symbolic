@@ -165,12 +165,6 @@ class SympyExpression(Expression):
         else:
             return SympyExpression(result)
 
-    def flatten(self) -> ExpressionOrNumber:
-        return self
-
-    def conj(self) -> ExpressionOrNumber:
-        return self.conjugate()
-
 
 class SympyParameter(Parameter, SympyExpression):
     """Placeholder for measurement angles, which allows the pattern optimizations
