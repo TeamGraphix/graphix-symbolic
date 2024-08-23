@@ -1,2 +1,2 @@
-graphix>=0.2.15
+graphix @ git+https://github.com/thierry-martinez/graphix@parameterized
 sympy>=1.9

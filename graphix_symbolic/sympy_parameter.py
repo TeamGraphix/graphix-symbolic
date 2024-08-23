@@ -7,10 +7,11 @@ SympyParameter can be used in computation such as simulations.
 from __future__ import annotations
 
 import numbers
+from typing import Mapping
 
 import numpy as np
 import sympy as sp
-from graphix.parameter import Expression, ExpressionOperatorResult, ExpressionOrNumber, Parameter
+from graphix.parameter import Expression, ExpressionOrComplex, ExpressionOrFloat, Parameter
 
 
 class SympyExpression(Expression):
@@ -24,7 +25,7 @@ class SympyExpression(Expression):
     def __init__(self, expression: sp.Expr) -> None:
         self._expression = expression
 
-    def __mul__(self, other) -> ExpressionOperatorResult:
+    def __mul__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(self._expression * other)
         elif isinstance(other, SympyExpression):
@@ -32,7 +33,7 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __rmul__(self, other) -> ExpressionOperatorResult:
+    def __rmul__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(other * self._expression)
         elif isinstance(other, SympyExpression):
@@ -40,7 +41,7 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __add__(self, other) -> ExpressionOperatorResult:
+    def __add__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(self._expression + other)
         elif isinstance(other, SympyExpression):
@@ -48,7 +49,7 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __radd__(self, other) -> ExpressionOperatorResult:
+    def __radd__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(other + self._expression)
         elif isinstance(other, SympyExpression):
@@ -56,7 +57,7 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __sub__(self, other) -> ExpressionOperatorResult:
+    def __sub__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(self._expression - other)
         elif isinstance(other, SympyExpression):
@@ -64,7 +65,7 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __rsub__(self, other) -> ExpressionOperatorResult:
+    def __rsub__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(other - self._expression)
         elif isinstance(other, SympyExpression):
@@ -72,7 +73,7 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __pow__(self, other) -> ExpressionOperatorResult:
+    def __pow__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(self._expression**other)
         elif isinstance(other, SympyExpression):
@@ -80,7 +81,7 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __rpow__(self, other) -> ExpressionOperatorResult:
+    def __rpow__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(other**self._expression)
         elif isinstance(other, SympyExpression):
@@ -88,10 +89,10 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __neg__(self) -> ExpressionOperatorResult:
+    def __neg__(self) -> ExpressionOrFloat:
         return SympyExpression(-self._expression)
 
-    def __truediv__(self, other) -> ExpressionOperatorResult:
+    def __truediv__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(self._expression / other)
         elif isinstance(other, SympyExpression):
@@ -99,7 +100,7 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __rtruediv__(self, other) -> ExpressionOperatorResult:
+    def __rtruediv__(self, other) -> ExpressionOrFloat:
         if isinstance(other, numbers.Number):
             return SympyExpression(other / self._expression)
         elif isinstance(other, SympyExpression):
@@ -114,34 +115,34 @@ class SympyExpression(Expression):
         """
         return np.nan
 
-    def sin(self) -> ExpressionOrNumber:
+    def sin(self) -> ExpressionOrFloat:
         return SympyExpression(sp.sin(self._expression))
 
-    def cos(self) -> ExpressionOrNumber:
+    def cos(self) -> ExpressionOrFloat:
         return SympyExpression(sp.cos(self._expression))
 
-    def tan(self) -> ExpressionOrNumber:
+    def tan(self) -> ExpressionOrFloat:
         return SympyExpression(sp.tan(self._expression))
 
-    def arcsin(self) -> ExpressionOrNumber:
+    def arcsin(self) -> ExpressionOrFloat:
         return SympyExpression(sp.asin(self._expression))
 
-    def arccos(self) -> ExpressionOrNumber:
+    def arccos(self) -> ExpressionOrFloat:
         return SympyExpression(sp.acos(self._expression))
 
-    def arctan(self) -> ExpressionOrNumber:
+    def arctan(self) -> ExpressionOrFloat:
         return SympyExpression(sp.atan(self._expression))
 
-    def exp(self) -> ExpressionOrNumber:
+    def exp(self) -> ExpressionOrFloat:
         return SympyExpression(sp.exp(self._expression))
 
-    def log(self) -> ExpressionOrNumber:
+    def log(self) -> ExpressionOrFloat:
         return SympyExpression(sp.log(self._expression))
 
-    def conjugate(self) -> ExpressionOrNumber:
+    def conjugate(self) -> ExpressionOrFloat:
         return SympyExpression(sp.conjugate(self._expression))
 
-    def sqrt(self) -> ExpressionOrNumber:
+    def sqrt(self) -> ExpressionOrFloat:
         return SympyExpression(sp.sqrt(self._expression))
 
     @property
@@ -154,12 +155,26 @@ class SympyExpression(Expression):
     def __str__(self) -> str:
         return str(self._expression)
 
-    def subs(self, variable: Parameter, value: ExpressionOrNumber) -> ExpressionOrNumber:
+    @staticmethod
+    def __check_sympy_parameter(variable: Parameter) -> None:
         if not isinstance(variable, SympyParameter):
             raise ValueError(
                 f"Sympy expressions can only be substituted with sympy parameters, not {variable.__class__}."
             )
+
+    def subs(self, variable: Parameter, value: ExpressionOrFloat) -> ExpressionOrComplex:
+        self.__check_sympy_parameter(variable)
         result = sp.N(self._expression.subs(variable._expression, value))
+        if isinstance(result, numbers.Number) or not result.free_symbols:
+            return complex(result)
+        else:
+            return SympyExpression(result)
+
+    def xreplace(self, assignment: Mapping[Parameter, ExpressionOrFloat]) -> ExpressionOrComplex:
+        for variable in assignment:
+            self.__check_sympy_parameter(variable)
+        sympy_assignment = {variable._expression: value for variable, value in assignment.items()}
+        result = sp.N(self._expression.xreplace(sympy_assignment))
         if isinstance(result, numbers.Number) or not result.free_symbols:
             return complex(result)
         else:
@@ -176,8 +191,9 @@ class SympyParameter(Parameter, SympyExpression):
 
         import numpy as np
         from graphix import Circuit
+
         circuit = Circuit(1)
-        alpha = Parameter('alpha')
+        alpha = Parameter("alpha")
         # rotation gate
         circuit.rx(0, alpha)
         pattern = circuit.transpile()

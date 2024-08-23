@@ -1,11 +1,12 @@
 import numpy as np
 import pytest
 from graphix import Circuit
+from numpy.random import Generator
 
 from graphix_symbolic import SympyParameter
 
 
-def test_parameter_circuit_simulation(fx_rng: np.random.Generator) -> None:
+def test_parameter_circuit_simulation(fx_rng: Generator) -> None:
     alpha = SympyParameter("alpha")
     circuit = Circuit(1)
     circuit.rz(0, alpha)
@@ -14,8 +15,20 @@ def test_parameter_circuit_simulation(fx_rng: np.random.Generator) -> None:
     assert np.allclose(result_subs_then_simulate.psi, result_simulate_then_subs.psi)
 
 
+def test_parameter_parallel_substitution(fx_rng: Generator) -> None:
+    alpha = SympyParameter("alpha")
+    beta = SympyParameter("beta")
+    circuit = Circuit(2)
+    circuit.rz(0, alpha)
+    circuit.rz(1, beta)
+    mapping = {alpha: 0.5, beta: 0.4}
+    result_subs_then_simulate = circuit.xreplace(mapping).simulate_statevector().statevec
+    result_simulate_then_subs = circuit.simulate_statevector().statevec.xreplace(mapping)
+    assert np.allclose(result_subs_then_simulate.psi, result_simulate_then_subs.psi)
+
+
 @pytest.mark.parametrize("backend", ["statevector", "densitymatrix"])
-def test_parameter_pattern_simulation(backend, fx_rng: np.random.Generator) -> None:
+def test_parameter_pattern_simulation(backend, fx_rng: Generator) -> None:
     alpha = SympyParameter("alpha")
     circuit = Circuit(1)
     circuit.rz(0, alpha)
