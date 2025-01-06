@@ -43,9 +43,9 @@ def test_parameter_pattern_simulation(backend, fx_rng: Generator) -> None:
     # Note: pr_calc=False is mandatory since we cannot compute
     # probabilities on symbolic states; we explore one arbitrary
     # branch.
-    result_simulate_then_subs = pattern.simulate_pattern(backend, pr_calc=False, rng=np.random.default_rng(seed)).subs(
-        alpha, 0.5
-    )
+    result_simulate_then_subs = pattern.simulate_pattern(
+        backend, pr_calc=False, rng=np.random.default_rng(seed), symbolic=True
+    ).subs(alpha, 0.5)
     if backend == "statevector":
         assert np.allclose(result_subs_then_simulate.psi, result_simulate_then_subs.psi)
     elif backend == "densitymatrix":

@@ -73,22 +73,6 @@ class SympyExpression(Expression):
         else:
             return NotImplemented
 
-    def __pow__(self, other) -> ExpressionOrFloat:
-        if isinstance(other, numbers.Number):
-            return SympyExpression(self._expression**other)
-        elif isinstance(other, SympyExpression):
-            return SympyExpression(self._expression**other._expression)
-        else:
-            return NotImplemented
-
-    def __rpow__(self, other) -> ExpressionOrFloat:
-        if isinstance(other, numbers.Number):
-            return SympyExpression(other**self._expression)
-        elif isinstance(other, SympyExpression):
-            return SympyExpression(other._expression**self._expression)
-        else:
-            return NotImplemented
-
     def __neg__(self) -> ExpressionOrFloat:
         return SympyExpression(-self._expression)
 
@@ -121,23 +105,8 @@ class SympyExpression(Expression):
     def cos(self) -> ExpressionOrFloat:
         return SympyExpression(sp.cos(self._expression))
 
-    def tan(self) -> ExpressionOrFloat:
-        return SympyExpression(sp.tan(self._expression))
-
-    def arcsin(self) -> ExpressionOrFloat:
-        return SympyExpression(sp.asin(self._expression))
-
-    def arccos(self) -> ExpressionOrFloat:
-        return SympyExpression(sp.acos(self._expression))
-
-    def arctan(self) -> ExpressionOrFloat:
-        return SympyExpression(sp.atan(self._expression))
-
     def exp(self) -> ExpressionOrFloat:
         return SympyExpression(sp.exp(self._expression))
-
-    def log(self) -> ExpressionOrFloat:
-        return SympyExpression(sp.log(self._expression))
 
     def conjugate(self) -> ExpressionOrFloat:
         return SympyExpression(sp.conjugate(self._expression))
