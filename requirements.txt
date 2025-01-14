@@ -1,0 +1,2 @@
+graphix @ git+https://github.com/thierry-martinez/graphix@parameterized
+sympy>=1.9
