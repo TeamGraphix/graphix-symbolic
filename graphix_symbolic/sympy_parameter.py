@@ -11,10 +11,10 @@ from typing import Mapping
 
 import numpy as np
 import sympy as sp
-from graphix.parameter import Expression, ExpressionOrComplex, ExpressionOrFloat, Parameter
+from graphix.parameter import ExpressionOrComplex, ExpressionOrFloat, ExpressionWithTrigonometry, Parameter
 
 
-class SympyExpression(Expression):
+class SympyExpression(ExpressionWithTrigonometry):
     """Expression with parameters.
 
     Implements arithmetic operations. This is essentially a wrapper over

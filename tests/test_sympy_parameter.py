@@ -11,6 +11,7 @@ def test_parameter_circuit_simulation(fx_rng: Generator) -> None:
     circuit = Circuit(1)
     circuit.rz(0, alpha)
     result_subs_then_simulate = circuit.subs(alpha, 0.5).simulate_statevector().statevec
+    assert result_subs_then_simulate.psi.dtype == np.complex128
     result_simulate_then_subs = circuit.simulate_statevector().statevec.subs(alpha, 0.5)
     assert np.allclose(result_subs_then_simulate.psi, result_simulate_then_subs.psi)
 
