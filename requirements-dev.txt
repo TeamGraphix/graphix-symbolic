@@ -1,0 +1,8 @@
+# Style
+ruff
+
+# Tests
+pytest
+pytest-mock
+pytest-cov
+tox
