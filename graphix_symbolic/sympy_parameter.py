@@ -99,6 +99,9 @@ class SympyExpression(ExpressionWithTrigonometry):
         """
         return np.nan
 
+    def __abs__(self) -> ExpressionOrFloat:
+        return SympyExpression(sp.Abs(self._expression))
+
     def sin(self) -> ExpressionOrFloat:
         return SympyExpression(sp.sin(self._expression))
 
