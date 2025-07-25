@@ -24,19 +24,13 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 requires-python = ">=3.8,<3.13"
-dynamic = ["version"]
-dependencies = [
-    "graphix>=0.2.15",
-    "sympy>=1.9",
-]
-[project.optional-dependencies]
-dev = [
-    "black==24.4.0",
-    "isort==5.13.2",
-    "pytest",
-    "parameterized",
-    "tox",
-]
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.dynamic.optional-dependencies]
+dev = { file = ["requirements-dev.txt"] }
 
 [project.urls]
 Documentation = "https://graphix.readthedocs.io"
