@@ -39,7 +39,7 @@ def test_parameter_pattern_simulation(backend, fx_rng: Generator) -> None:
     # We cannot compute probabilities on symbolic states; we explore
     # one arbitrary branch.
     result_simulate_then_subs = pattern.simulate_pattern(
-        backend, branch_selector=RandomBranchSelector(pr_calc=False, rng=fx_rng), symbolic=True
+        backend, branch_selector=RandomBranchSelector(pr_calc=False), rng=fx_rng, symbolic=True
     ).subs(alpha, 0.5)
     if backend == "statevector":
         assert np.allclose(result_subs_then_simulate.psi, result_simulate_then_subs.psi)
