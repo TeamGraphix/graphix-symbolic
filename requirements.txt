@@ -1,2 +1,2 @@
-graphix @ git+https://github.com/thierry-martinez/graphix@parameterized
+graphix @ git+https://github.com/thierry-martinez/graphix@branch_selector
 sympy>=1.9
