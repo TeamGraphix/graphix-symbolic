@@ -7,11 +7,20 @@ SympyParameter can be used in computation such as simulations.
 from __future__ import annotations
 
 import numbers
-from typing import Mapping
+from typing import TYPE_CHECKING
 
 import numpy as np
-import sympy as sp
-from graphix.parameter import ExpressionOrComplex, ExpressionOrFloat, ExpressionWithTrigonometry, Parameter
+import sympy as sp  # type: ignore[import-untyped]
+from graphix.parameter import (
+    ExpressionOrComplex,
+    ExpressionOrFloat,
+    ExpressionOrSupportsFloat,
+    ExpressionWithTrigonometry,
+    Parameter,
+)
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 class SympyExpression(ExpressionWithTrigonometry):
@@ -99,13 +108,13 @@ class SympyExpression(ExpressionWithTrigonometry):
         """
         return np.nan
 
-    def sin(self) -> ExpressionOrFloat:
+    def sin(self) -> ExpressionWithTrigonometry:
         return SympyExpression(sp.sin(self._expression))
 
-    def cos(self) -> ExpressionOrFloat:
+    def cos(self) -> ExpressionWithTrigonometry:
         return SympyExpression(sp.cos(self._expression))
 
-    def exp(self) -> ExpressionOrFloat:
+    def exp(self) -> ExpressionWithTrigonometry:
         return SympyExpression(sp.exp(self._expression))
 
     def conjugate(self) -> ExpressionOrFloat:
@@ -124,30 +133,29 @@ class SympyExpression(ExpressionWithTrigonometry):
     def __str__(self) -> str:
         return str(self._expression)
 
-    @staticmethod
-    def __check_sympy_parameter(variable: Parameter) -> None:
-        if not isinstance(variable, SympyParameter):
-            raise ValueError(
-                f"Sympy expressions can only be substituted with sympy parameters, not {variable.__class__}."
-            )
-
-    def subs(self, variable: Parameter, value: ExpressionOrFloat) -> ExpressionOrComplex:
-        self.__check_sympy_parameter(variable)
-        result = sp.N(self._expression.subs(variable._expression, value))
+    def subs(self, variable: Parameter, value: ExpressionOrSupportsFloat) -> ExpressionOrComplex:
+        parameter = _check_sympy_parameter(variable)
+        result = sp.N(self._expression.subs(parameter._expression, value))
         if isinstance(result, numbers.Number) or not result.free_symbols:
             return complex(result)
         else:
             return SympyExpression(result)
 
-    def xreplace(self, assignment: Mapping[Parameter, ExpressionOrFloat]) -> ExpressionOrComplex:
-        for variable in assignment:
-            self.__check_sympy_parameter(variable)
-        sympy_assignment = {variable._expression: value for variable, value in assignment.items()}
+    def xreplace(self, assignment: Mapping[Parameter, ExpressionOrSupportsFloat]) -> ExpressionOrComplex:
+        sympy_assignment = {
+            _check_sympy_parameter(variable)._expression: value for variable, value in assignment.items()
+        }
         result = sp.N(self._expression.xreplace(sympy_assignment))
         if isinstance(result, numbers.Number) or not result.free_symbols:
             return complex(result)
         else:
             return SympyExpression(result)
+
+
+def _check_sympy_parameter(variable: Parameter) -> SympyParameter:
+    if not isinstance(variable, SympyParameter):
+        raise ValueError(f"Sympy expressions can only be substituted with sympy parameters, not {variable.__class__}.")
+    return variable
 
 
 class SympyParameter(Parameter, SympyExpression):
