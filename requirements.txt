@@ -1,2 +1,2 @@
-graphix @ git+https://github.com/thierry-martinez/graphix@branch_selector
+graphix @ git+https://github.com/thierry-martinez/graphix@fix/220_avoid_get_set
 sympy>=1.9

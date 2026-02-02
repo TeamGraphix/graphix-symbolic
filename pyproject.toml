@@ -78,3 +78,6 @@ docstring-code-format = true
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+[tool.mypy]
+files = ["graphix_symbolic", "tests"]
