@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pytest
 from graphix import Circuit
@@ -5,6 +7,9 @@ from graphix.branch_selector import RandomBranchSelector
 from numpy.random import Generator
 
 from graphix_symbolic import SympyParameter
+
+if TYPE_CHECKING:
+    from graphix.parameter import Parameter
 
 
 def test_parameter_circuit_simulation(fx_rng: Generator) -> None:
@@ -23,7 +28,7 @@ def test_parameter_parallel_substitution(fx_rng: Generator) -> None:
     circuit = Circuit(2)
     circuit.rz(0, alpha)
     circuit.rz(1, beta)
-    mapping = {alpha: 0.5, beta: 0.4}
+    mapping: dict[Parameter, float] = {alpha: 0.5, beta: 0.4}
     result_subs_then_simulate = circuit.xreplace(mapping).simulate_statevector().statevec
     result_simulate_then_subs = circuit.simulate_statevector().statevec.xreplace(mapping)
     assert np.allclose(result_subs_then_simulate.psi, result_simulate_then_subs.psi)
