@@ -1,2 +1,2 @@
-graphix @ git+https://github.com/TeamGraphix/graphix
+graphix>=0.4
 sympy>=1.9

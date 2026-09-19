@@ -19,6 +19,9 @@ from graphix.parameter import (
     Parameter,
 )
 
+# override introduced in Python 3.12
+from typing_extensions import override
+
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
@@ -133,7 +136,8 @@ class SympyExpression(ExpressionWithTrigonometry):
     def __str__(self) -> str:
         return str(self._expression)
 
-    def subs(self, variable: Parameter, value: ExpressionOrSupportsFloat) -> ExpressionOrComplex:
+    @override
+    def with_parameter(self, variable: Parameter, value: ExpressionOrSupportsFloat) -> ExpressionOrComplex:
         parameter = _check_sympy_parameter(variable)
         result = sp.N(self._expression.subs(parameter._expression, value))
         if isinstance(result, numbers.Number) or not result.free_symbols:
@@ -141,7 +145,8 @@ class SympyExpression(ExpressionWithTrigonometry):
         else:
             return SympyExpression(result)
 
-    def xreplace(self, assignment: Mapping[Parameter, ExpressionOrSupportsFloat]) -> ExpressionOrComplex:
+    @override
+    def with_parameters(self, assignment: Mapping[Parameter, ExpressionOrSupportsFloat]) -> ExpressionOrComplex:
         sympy_assignment = {
             _check_sympy_parameter(variable)._expression: value for variable, value in assignment.items()
         }
@@ -154,7 +159,7 @@ class SympyExpression(ExpressionWithTrigonometry):
 
 def _check_sympy_parameter(variable: Parameter) -> SympyParameter:
     if not isinstance(variable, SympyParameter):
-        raise ValueError(f"Sympy expressions can only be substituted with sympy parameters, not {variable.__class__}.")
+        raise TypeError(f"Sympy expressions can only be substituted with sympy parameters, not {variable.__class__}.")
     return variable
 
 
@@ -179,12 +184,12 @@ class SympyParameter(Parameter, SympyExpression):
         # explored branch is the same for the two simulations.
         seed = np.random.integers(2**63)
         # simulate with parameter assignment
-        sv = pattern.subs(alpha, 0.5).simulate_pattern(pr_calc=False, rng=np.random.default_rng(seed))
+        sv = pattern.subs(alpha, 0.5).simulate(pr_calc=False, rng=np.random.default_rng(seed))
         # simulate without pattern assignment
         # (the resulting state vector is symbolic)
         # Note: pr_calc=False is mandatory since we cannot compute probabilities on
         # symbolic states; we explore one arbitrary branch.
-        sv2 = pattern.simulate_pattern(pr_calc=False, rng=np.random.default_rng(seed))
+        sv2 = pattern.simulate(pr_calc=False, rng=np.random.default_rng(seed))
         # Substituting alpha in the resulting state vector should yield the same result
         assert np.allclose(sv.psi, sv2.subs(alpha, 0.5).psi)
     """

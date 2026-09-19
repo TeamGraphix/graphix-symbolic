@@ -24,11 +24,12 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Physics",
 ]
-requires-python = ">=3.9,<3.15"
-dynamic = ["version", "dependencies", "optional-dependencies"]
-
-[tool.setuptools.dynamic]
-dependencies = { file = ["requirements.txt"] }
+requires-python = ">=3.10,<3.15"
+dynamic = ["version"]
+dependencies = [
+    "graphix",
+    "sympy>=1.9",
+]
 
 [tool.setuptools.dynamic.optional-dependencies]
 dev = { file = ["requirements-dev.txt"] }
@@ -36,6 +37,15 @@ dev = { file = ["requirements-dev.txt"] }
 [project.urls]
 Documentation = "https://graphix.readthedocs.io"
 "Bug Tracker" = "https://github.com/TeamGraphix/graphix/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-mock>=3.15.1",
+    "ruff>=0.16.0",
+    "tox>=4.58.0",
+]
 
 [tool.setuptools_scm]
 version_file = "graphix_symbolic/_version.py"
@@ -82,3 +92,6 @@ convention = "numpy"
 
 [tool.mypy]
 files = ["graphix_symbolic", "tests"]
+
+[tool.uv.sources]
+graphix = { git = "https://github.com/thierry-martinez/graphix", rev = "in-place_methods" }

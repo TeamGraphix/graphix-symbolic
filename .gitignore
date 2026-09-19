@@ -1,2 +1,6 @@
 *~
 __pycache__/
+*.egg-info/
+./*/_version.py
+/graphix_symbolic/_version.py
+_version.py
