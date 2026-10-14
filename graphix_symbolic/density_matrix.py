@@ -155,24 +155,24 @@ class DensityMatrix(DenseState, InplaceParameterizable):
         self.tensor(dm_to_add)
 
     @override
-    def evolve_single(self, op: Matrix, i: int) -> None:
+    def evolve_single(self, op: Matrix, qubit: int) -> None:
         """Single-qubit operation.
 
         Parameters
         ----------
             op : np.ndarray
                 2*2 matrix.
-            i : int
+            qubit : int
                 Index of qubit to apply operator.
         """
-        assert i >= 0
-        assert i < self.nqubit
+        assert qubit >= 0
+        assert qubit < self.nqubit
         if op.shape != (2, 2):
             raise ValueError("op must be 2*2 matrix.")
 
         rho_tensor = self.rho.reshape((2,) * self.nqubit * 2)
-        rho_tensor = tensordot(tensordot(op, rho_tensor, axes=(1, i)), op.conj().T, axes=(i + self.nqubit, 0))
-        rho_tensor = np.moveaxis(rho_tensor, (0, -1), (i, i + self.nqubit))
+        rho_tensor = tensordot(tensordot(op, rho_tensor, axes=(1, qubit)), op.conj().T, axes=(qubit + self.nqubit, 0))
+        rho_tensor = np.moveaxis(rho_tensor, (0, -1), (qubit, qubit + self.nqubit))
         self.rho = rho_tensor.reshape((2**self.nqubit, 2**self.nqubit))
 
     @override

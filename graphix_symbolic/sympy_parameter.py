@@ -7,7 +7,7 @@ SympyParameter can be used in computation such as simulations.
 from __future__ import annotations
 
 import numbers
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 import numpy as np
 import sympy as sp  # type: ignore[import-untyped]
@@ -17,6 +17,7 @@ from graphix.parameter import (
     ExpressionOrSupportsFloat,
     ExpressionWithTrigonometry,
     Parameter,
+    Expression,
 )
 
 # override introduced in Python 3.12
@@ -25,6 +26,8 @@ from typing_extensions import override
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from graphix.fundamentals import Sign
+    from numpy.typing import NDArray
 
 class SympyExpression(ExpressionWithTrigonometry):
     """Expression with parameters.
@@ -37,7 +40,22 @@ class SympyExpression(ExpressionWithTrigonometry):
     def __init__(self, expression: sp.Expr) -> None:
         self._expression = expression
 
-    def __mul__(self, other) -> ExpressionOrFloat:
+    @overload
+    def __mul__(self, other: float) -> ExpressionOrFloat: ...
+
+    @overload
+    def __mul__(self, other: Sign) -> ExpressionOrFloat: ...
+
+    @overload
+    def __mul__(self, other: NDArray[np.object_]) -> NDArray[np.object_]: ...
+
+    @overload
+    def __mul__(self, other: NDArray[np.complex128]) -> NDArray[np.complex128]: ...
+
+    @overload
+    def __mul__(self, other: Expression) -> ExpressionOrFloat: ...
+
+    def __mul__(self, other) -> ExpressionOrFloat | NDArray[np.object_] | NDArray[np.complex128]:
         if isinstance(other, numbers.Number):
             return SympyExpression(self._expression * other)
         elif isinstance(other, SympyExpression):
